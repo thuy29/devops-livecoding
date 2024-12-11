@@ -28,30 +28,30 @@ jobs:
       - name: Build and test with Maven
         run: mvn clean verify --file ./simple-api/pom.xml
 
-  publish:
+  build-and-push-docker-image:
     needs: test-backend
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout code
         uses: actions/checkout@v2.5.0
 
-      - name: Login to DockerHub
-        uses: docker/login-action@v2
+      - name: Build and push backend
+        uses: docker/build-push-action@v3
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          context: ./simple-api
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/tp-devops-simple-api:latest
+          push: ${{ github.ref == 'refs/heads/main' }}
 
-      - name: Publish database image
-        run: |
-          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/my-db ./database
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/my-db
+      - name: Build and push database
+        uses: docker/build-push-action@v3
+        with:
+          context: ./database
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/tp-devops-database:latest
+          push: ${{ github.ref == 'refs/heads/main' }}
 
-      - name: Publish backend image
-        run: |
-          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/my-api ./simple-api
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/my-api
-
-      - name: Publish httpd image
-        run: |
-          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/my-httpd ./http-server
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/my-httpd
+      - name: Build and push httpd
+        uses: docker/build-push-action@v3
+        with:
+          context: ./http-server
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/tp-devops-httpd:latest
+          push: ${{ github.ref == 'refs/heads/main' }}
