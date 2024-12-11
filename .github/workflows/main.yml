@@ -1,67 +1,64 @@
-name: CI DevOps
-
+name: CI/CD Pipeline
+ 
 on:
   push:
     branches:
       - main
       - develop
   pull_request:
-
+ 
 jobs:
   test-backend:
     runs-on: ubuntu-22.04
+ 
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v2.5.0
-      
+ 
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
-          distribution: 'temurin'
           java-version: '17'
-      
-      - name: Set up Maven
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y maven
-
-    
+          distribution: 'adopt'
+ 
+      # Étape : Analyse avec SonarCloud
       - name: Analyze code with SonarCloud
         run: |
           cd simple-api
           mvn -B verify sonar:sonar \
               -Dsonar.projectKey=thuy29_devops-livecoding \
-              -Dsonar.organization=thuy29 \
+              -Dsonar.organization=thuy29  \
               -Dsonar.host.url=https://sonarcloud.io \
               -Dsonar.login=${{ secrets.SONAR_TOKEN }}
  
- 
   build-and-push-docker-image:
     needs: test-backend
-    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-22.04
-  
+ 
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v2.5.0
 
-      - name: Log in to Docker Hub
-        uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
+      - name: Login to DockerHub
+        run: echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+ 
+      - name: Build image and push backend
+        uses: docker/build-push-action@v3
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-
-      - name: Build Docker image and push backend
-        run: |
-          docker build ./simple-api --file ./simple-api/Dockerfile --tag ${{ secrets.DOCKER_USERNAME }}/tp-devops-api:latest
-          docker push ${{ secrets.DOCKER_USERNAME }}/tp-devops-api:latest
-
+          context: ./simple-api
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/tp-simple-api:latest
+          push: ${{ github.ref == 'refs/heads/main' }}
+ 
       - name: Build image and push database
-        run: |
-          docker build ./database --file ./database/Dockerfile --tag ${{ secrets.DOCKER_USERNAME }}/tp-devops-db:latest
-          docker push ${{ secrets.DOCKER_USERNAME }}/tp-devops-db:latest
-  
+        uses: docker/build-push-action@v3
+        with:
+          context: ./database
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/tp-db:latest
+          push: ${{ github.ref == 'refs/heads/main' }}
+
       - name: Build image and push httpd
-        run: |
-          docker build ./http-server --file ./http-server/Dockerfile --tag ${{ secrets.DOCKER_USERNAME }}/tp-devops-http:latest
-          docker push ${{ secrets.DOCKER_USERNAME }}/tp-devops-http:latest
+        uses: docker/build-push-action@v3
+        with:
+          context: ./http-server
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/tp-httpd-sever:latest
+          push: ${{ github.ref == 'refs/heads/main' }}
