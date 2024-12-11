@@ -1,0 +1,52 @@
+name: CI DevOps
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+
+jobs:
+  test-backend:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2.5.0
+      
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+      
+      - name: Set up Maven
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y maven
+      
+      - name: Build and test with Maven
+        run: mvn clean verify --file ./simple-api/pom.xml
+
+
+  publish:
+      needs: test-and-build
+      runs-on: ubuntu-22.04
+      steps:
+        - name: Login to DockerHub
+          run: docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
+
+        - name: Publish database image
+          run: |
+            docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/my-db ./database
+            docker push ${{ secrets.DOCKERHUB_USERNAME }}/my-db
+
+        - name: Publish backend image
+          run: |
+            docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/my-api ./simple-api
+            docker push ${{ secrets.DOCKERHUB_USERNAME }}/my-api
+
+        - name: Publish httpd image
+          run: |
+            docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/my-httpd ./http-server
+            docker push ${{ secrets.DOCKERHUB_USERNAME }}/my-httpd
