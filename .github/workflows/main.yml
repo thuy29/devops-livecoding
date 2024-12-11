@@ -28,7 +28,7 @@ jobs:
       - name: Build and test with Maven
         run: mvn clean verify --file ./simple-api/pom.xml
 
-    publish:
+  publish:
     needs: test-backend
     runs-on: ubuntu-22.04
     steps:
