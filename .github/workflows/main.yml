@@ -26,11 +26,17 @@ jobs:
           sudo apt-get install -y maven
 
           
-      - name: Build and analyze
+      - name: Sonar Cloud
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=thuy29_devops-livecoding --file ./simple-api/pom.xml
- 
+        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
+          -Dsonar.projectKey=thuy29_devops-livecoding \
+          -Dsonar.organization=thuy29 \
+          -Dsonar.host.url=https://sonarcloud.io \
+          -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
+          -Dsonar.ci.mode=true \
+          --file ./simple-api/pom.xml
+
  
   build-and-push-docker-image:
     needs: test-backend
