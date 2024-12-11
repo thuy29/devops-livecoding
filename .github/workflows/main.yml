@@ -28,25 +28,24 @@ jobs:
       - name: Build and test with Maven
         run: mvn clean verify --file ./simple-api/pom.xml
 
-
   publish:
-      needs: test-and-build
-      runs-on: ubuntu-22.04
-      steps:
-        - name: Login to DockerHub
-          run: docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
+    needs: test-backend 
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Login to DockerHub
+        run: docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
 
-        - name: Publish database image
-          run: |
-            docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/my-db ./database
-            docker push ${{ secrets.DOCKERHUB_USERNAME }}/my-db
+      - name: Publish database image
+        run: |
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/my-db ./database
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/my-db
 
-        - name: Publish backend image
-          run: |
-            docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/my-api ./simple-api
-            docker push ${{ secrets.DOCKERHUB_USERNAME }}/my-api
+      - name: Publish backend image
+        run: |
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/my-api ./simple-api
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/my-api
 
-        - name: Publish httpd image
-          run: |
-            docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/my-httpd ./http-server
-            docker push ${{ secrets.DOCKERHUB_USERNAME }}/my-httpd
+      - name: Publish httpd image
+        run: |
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/my-httpd ./http-server
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/my-httpd
