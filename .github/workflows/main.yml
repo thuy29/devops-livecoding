@@ -33,7 +33,9 @@ jobs:
               -Dsonar.projectKey=thuy29_devops-livecoding \
               -Dsonar.organization=thuy29 \
               -Dsonar.host.url=https://sonarcloud.io \
-              -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+              -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
+              -Dsonar.ci.mode=true
+
  
  
   build-and-push-docker-image:
