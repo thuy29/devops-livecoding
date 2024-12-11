@@ -24,15 +24,17 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y maven
-      
-      - name: Build, test, and analyze with SonarCloud
-        working-directory: ./simple-api
-        run: mvn -B verify sonar:sonar \
-          -Dsonar.projectKey=thuy29_devops-livecoding \
-          -Dsonar.organization=thuy29 \
-          -Dsonar.host.url=https://sonarcloud.io \
-          -Dsonar.login=${{ secrets.SONAR_TOKEN }}
 
+    
+      - name: Analyze code with SonarCloud
+        run: |
+          cd simple-api
+          mvn -B verify sonar:sonar \
+              -Dsonar.projectKey=thuy29_devops-livecoding \
+              -Dsonar.organization=thuy29 \
+              -Dsonar.host.url=https://sonarcloud.io \
+              -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+ 
   build-and-push-docker-image:
     needs: test-backend
     if: github.ref == 'refs/heads/main'
