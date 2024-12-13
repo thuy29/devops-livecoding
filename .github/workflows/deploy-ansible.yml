@@ -22,7 +22,7 @@ jobs:
 
       - name: Deploy with Ansible
         env:
-          ANSIBLE_ROLES_PATH: ./ansible/roles  # Définit explicitement le chemin des rôles
+          ANSIBLE_ROLES_PATH: ./ansible/inventories/roles  # Définit explicitement le chemin des rôles
           ANSIBLE_HOST_KEY_CHECKING: False
         run: |
           ansible-playbook -i ansible/inventories/setup.yml ansible/playbook.yml
