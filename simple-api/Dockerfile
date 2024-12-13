@@ -6,6 +6,9 @@ COPY pom.xml .
 COPY src ./src
 RUN mvn package -DskipTests
 
+# Expose port 8080
+EXPOSE 8080
+
 # Run
 FROM amazoncorretto:17
 ENV MYAPP_HOME /opt/myapp
