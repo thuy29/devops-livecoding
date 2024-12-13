@@ -3,7 +3,7 @@ name: Deploy with Ansible
 on:
   workflow_run:
     workflows:
-      - main
+      - CI DevOps
     types:
       - completed
 
