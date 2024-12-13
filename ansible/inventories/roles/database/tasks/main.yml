@@ -29,14 +29,15 @@
     name: my-db
     state: stopped
 
-
-- name: Stop and remove PostgreSQL container
-  docker_container:
-    name: my-db
-    state: absent
-
 - name: Start PostgreSQL container
   docker_container:
     name: my-db
+    image: thuuuuyyy/tp-devops-db:latest
+    env:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: db
     state: started
     restart_policy: always
+    networks:
+      - name: app-network
