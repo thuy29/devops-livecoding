@@ -1,0 +1,12 @@
+---
+# Lancer le conteneur backend
+- name: Run backend container
+  docker_container:
+    name: my-api
+    image: thuuuuyyy/tp-devops-api:latest  # Remplacez par votre image Docker pour le backend
+    env:
+      DATABASE_URL: postgres://user:password@my-database/dbname
+    state: started
+    restart_policy: always
+    networks:
+      - name: app-network

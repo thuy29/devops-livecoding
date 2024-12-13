@@ -1,0 +1,12 @@
+- name: Run proxy server
+  docker_container:
+    name: proxy
+    image: thuuuuyyy/tp-devops-http:latest
+    ports:
+      - "80:80"
+    state: started
+    restart_policy: always
+    networks:
+      - name: app-network
+    env:
+      DATABASE_URL: postgres://user:password@my-database/dbname

@@ -1,0 +1,42 @@
+---
+- name: Run database container
+  docker_container:
+    name: my-db
+    image: thuuuuyyy/tp-devops-db:latest
+    env:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: db
+    state: started
+    restart_policy: always
+    networks:
+      - name: app-network
+
+- name: Copy SQL scripts to initdb directory
+  copy:
+    src: "{{ item }}"
+    dest: /docker-entrypoint-initdb.d/
+    mode: '0644'
+  with_items:
+    - "{{ role_path }}/files/01-CreateSchema.sql"
+    - "{{ role_path }}/files/02-InsertData.sql"
+
+- name: Update pg_hba.conf to use scram-sha-256 authentication inside the container
+  command: docker exec my-db sed -i 's/^host.*all.*all.*trust/host all all 0.0.0.0\/0 scram-sha-256/' /var/lib/postgresql/data/pg_hba.conf
+
+- name: Restart PostgreSQL container
+  docker_container:
+    name: my-db
+    state: stopped
+
+
+- name: Stop and remove PostgreSQL container
+  docker_container:
+    name: my-db
+    state: absent
+
+- name: Start PostgreSQL container
+  docker_container:
+    name: my-db
+    state: started
+    restart_policy: always

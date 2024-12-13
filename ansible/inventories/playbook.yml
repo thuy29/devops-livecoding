@@ -1,0 +1,10 @@
+- hosts: all
+  gather_facts: true
+  become: true
+
+  roles:
+    - role: docker        # Installer Docker
+    - role: network       # Créer le réseau Docker
+    - role: database      # Lancer la base de données
+    - role: backend       # Lancer l'API backend
+    - role: proxy         # Lancer le serveur proxy HTTPD
