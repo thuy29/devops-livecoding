@@ -1,18 +1,28 @@
 name: Deploy with Ansible
 
 on:
-  push:
-    branches:
-      - production
+  workflow_run:
+    workflows:
+      - main
+    types:
+      - completed
 
 jobs:
   deploy:
+    if: github.ref == 'refs/heads/production'
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: SSH and deploy with Ansible
+      - name: Install Ansible
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ansible
+
+      - name: Deploy with Ansible
+        env:
+          ANSIBLE_HOST_KEY_CHECKING: "False"
         run: |
           ansible-playbook -i inventories/setup.yml playbook.yml
