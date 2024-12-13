@@ -24,4 +24,4 @@ jobs:
         env:
           ANSIBLE_HOST_KEY_CHECKING: "False"
         run: |
-          ansible-playbook -i inventories/setup.yml inventories/playbook.yml
+          ansible-playbook -i ansible/inventories/setup.yml ansible/playbook.yml
