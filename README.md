@@ -134,10 +134,4 @@ This repository demonstrates the setup of a complete CI/CD pipeline using **GitH
    - CI Pipeline: Triggered on push or PR to `main`
    - Deployment: Triggered after CI completion.
 
-4. Verify the deployment:
-   - Access the API through the proxy server:
-     ```bash
-     curl http://<server-ip>/departments/
-     ```
-
 
