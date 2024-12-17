@@ -1,5 +1,3 @@
-# devops-livecoding
-
 # CI/CD Pipeline with GitHub Actions and Ansible
 
 ## **Project Overview**
@@ -63,16 +61,6 @@ This repository demonstrates the setup of a complete CI/CD pipeline using **GitH
    - **Backend API**: Spring Boot application packaged into a JAR using Maven.
    - **Proxy**: HTTPD server configured to redirect requests to the backend.
 
-- Configured `httpd.conf` with the following Virtual Host:
-   ```apache
-   <VirtualHost *:80>
-       ProxyPreserveHost On
-       ProxyPass / http://backend:8080/
-       ProxyPassReverse / http://backend:8080/
-   </VirtualHost>
-   LoadModule proxy_module modules/mod_proxy.so
-   LoadModule proxy_http_module modules/mod_proxy_http.so
-   ```
 
 - Docker images pushed to Docker Hub:
    - **Backend:** `thuuuuyyy/tp-devops-api:latest`
@@ -98,16 +86,7 @@ This repository demonstrates the setup of a complete CI/CD pipeline using **GitH
    - **Problem:** Roles were placed in the wrong directory (`inventories/roles`).
    - **Solution:** Moved roles to the correct `ansible/roles` directory.
 
-3. **Docker Containers Not Communicating**
-   - **Problem:** Backend and database containers could not communicate.
-   - **Solution:** Created a custom Docker network in Ansible:
-     ```yaml
-     - name: Create Docker network
-       docker_network:
-         name: app-network
-     ```
-
-4. **Application Crashing in Backend**
+3. **Application Crashing in Backend**
    - **Problem:** Backend could not find the database due to incorrect environment variables.
    - **Solution:** Updated the `docker_container` task with correct `DATABASE_URL`:
      ```yaml
@@ -117,7 +96,7 @@ This repository demonstrates the setup of a complete CI/CD pipeline using **GitH
 
 ---
 
-## **Answers to TP Questions**
+## **Answers to questions**
 
 1. **What are testcontainers?**
    Testcontainers are Java libraries that allow you to run Docker containers during tests. They provide lightweight, disposable databases or other services for integration testing.
@@ -139,7 +118,7 @@ This repository demonstrates the setup of a complete CI/CD pipeline using **GitH
 
 ---
 
-## **How to Reproduce the CI/CD Pipeline**
+## **How to Reproduce the pipeline**
 
 1. Clone this repository:
    ```bash
@@ -147,12 +126,12 @@ This repository demonstrates the setup of a complete CI/CD pipeline using **GitH
    ```
 
 2. Set up GitHub Secrets:
-   - `SSH_PRIVATE_KEY`: Your SSH private key.
-   - `SONAR_TOKEN`: Token for SonarCloud.
-   - `DOCKER_USERNAME` and `DOCKER_PASSWORD`: Credentials for Docker Hub.
+   - `SSH_PRIVATE_KEY`: Your SSH private key
+   - `SONAR_TOKEN`: Token for SonarCloud
+   - `DOCKER_USERNAME` and `DOCKER_PASSWORD`: Credentials for Docker Hub
 
 3. Run the workflows:
-   - CI Pipeline: Triggered on push or PR to `main` or `develop`.
+   - CI Pipeline: Triggered on push or PR to `main`
    - Deployment: Triggered after CI completion.
 
 4. Verify the deployment:
