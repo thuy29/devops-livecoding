@@ -1,3 +1,6 @@
+# Author : Thuy Linh CO
+
+
 # CI/CD Pipeline with GitHub Actions and Ansible
 
 ## **Project Overview**
